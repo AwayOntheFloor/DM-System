@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>设备管理系统</title>
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="../vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <link href="../dist/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+            	<img style="float: left;" src="../img/logo.png" />
+                <span class="navbar-brand" >设备管理系统</span>
+            </div>
+      
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                </li>
+            </ul>
+            <div class="navbar-default sidebar" role="navigation">
+                
+                     <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="main.html" style="font-size:large;"><i class="fa fa-bar-chart-o fa-fw"></i>设备监控<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="main.html">设备列表</a>
+                                </li>
+                                <li>
+                                    <a href="">实时定位</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="deviceManagement.html" style="font-size:large;"><i class="fa fa-wrench fa-fw"></i>设备管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="deviceManagement.html">设备概览</a>
+                                </li>
+                                <li>
+                                    <a href="">增删设置</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="record.html" style="font-size:large;"><i class="fa fa-edit fa-fw"></i>记录查询<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="record.html">历史轨迹</a>
+                                </li>
+                                <li>
+                                    <a href="">异常警报统计</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+               </div>
+               
+        </nav>
+
+        <div id="page-wrapper">
+        	<div id="fenceVue">
+            <div class="panel panel-default" >
+                        <div class="panel-heading">
+                            <span style="margin-right:20px ;font-size: large;"><strong>围栏设置</strong></span> 
+                            <span style="float: right;">
+                            	<strong>设备名称：</strong><span style="margin-right:30px;">设备1</span>
+                            	<strong>电子围栏名称：</strong><input style="width: 100px;margin-right: 10px;"></input>
+                            	<strong>辐射半径（米）：</strong><input v-model="fences[0].fenceRadius" placeholder="请输入半径" style="width: 50px;" v-on:keyup.enter="radiusSubmit">
+                            	<button style="margin-right: 10px;" v-on:click="radiusSubmit">提交</button>
+                            </span>
+                        </div>
+                         
+                         <div style="height: 500px;overflow: auto;">
+                        	<div id="fenceMap" v-bind:style="{ width:recordMapWidth+'px', height:recordMapHeight+'px'}" style="background-image: url(http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg);background-repeat:no-repeat;">						
+								<canvas id="fenceCanvas" width="1000" height="600" v-on:click.left="hello(event)">
+	                        	</canvas>
+                        	</div>
+                         <div>	
+                         	
+                   </div>
+                   <div>
+        </div>
+    </div>
+
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../dist/js/sb-admin-2.min.js"></script>
+    <script src="../js/vue.min.js"></script>
+    <script>
+    	var fenceVue = new Vue({
+    		el:"#fenceVue",
+    		data:{
+    			myurl:'',
+    			recordMapWidth:700,
+    			recordMapHeight:1000,
+    			fences:[
+	    			{"devicesName":"手机","devicesID":"20170929666","defenceID":"d001","defenceName":"好大的围栏","posX":"400","posY":"280","fenceRadius":"40"}
+    			],
+    			fencePosLen:0,
+    			fencePosition:[
+    			
+    			]
+    		},
+    		created :function(){
+		  		this.myurl="http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				var img = new Image();
+				img.src = "http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				this.recordMapHeight=img.height;
+				this.recordMapWidth=img.width;	
+		  	},
+		  	mounted:function(){
+		  		var canvas = document.getElementById("fenceCanvas");
+				ctx = canvas.getContext("2d");
+				ctx.strokeStyle = 'red';
+				ctx.lineWidth=1;
+				ctx.beginPath();
+				imgGreen = new Image();
+				imgGreen.src="../img/green.png";
+				imgGreen.onload=function(){
+				for(var i=0;i<fenceVue.fences.length;i++){
+						var x=fenceVue.fences[i].posX;
+						var y=fenceVue.fences[i].posY;
+						var r=fenceVue.fences[0].fenceRadius;
+						ctx.drawImage(imgGreen,x-8,y-15);
+						ctx.arc(x,y,r,0,2*Math.PI,true);
+						ctx.fillStyle = 'rgba(226,104,105,0.5)';
+						ctx.fill();
+						ctx.stroke();
+				}
+			}	
+		  	},
+    		methods:{
+    			hello:function(event){
+//  				var corX=event.offsetX;
+//  				var corY=event.offsetY;
+					fenceVue.fencePosition.push({
+						corX:event.offsetX,
+						corY:event.offsetY
+					})
+    				alert(fenceVue.fencePosition[fenceVue.fencePosLen].corX);
+    				fenceVue.fencePosLen++;
+//  				var canvas = document.getElementById("fenceCanvas");
+//  				ctx = canvas.getContext("2d");
+    				
+    			},
+    			radiusSubmit:function(){
+    				var canvas = document.getElementById("fenceCanvas");
+    				imgGreen = new Image();
+					imgGreen.src="../img/green.png";
+    				canvas.height=canvas.height;
+					ctx = canvas.getContext("2d");
+					ctx.strokeStyle = 'red';
+					ctx.lineWidth=1;
+					ctx.beginPath();
+					var x=fenceVue.fences[0].posX;
+					var y=fenceVue.fences[0].posY;
+					var r=fenceVue.fences[0].fenceRadius;
+					ctx.drawImage(imgGreen,x-8,y-15);
+					ctx.arc(x,y,r,0,2*Math.PI,true);
+					ctx.fillStyle = 'rgba(226,104,105,0.5)';
+					ctx.fill();
+					ctx.stroke();
+    			}
+    		}
+    	});
+    		
+	    $(document).ready(function() {
+	        $('#dataTables-example').DataTable({
+	            responsive: true
+	        });
+	    });
+    </script>
+
+</body>
+
+</html>

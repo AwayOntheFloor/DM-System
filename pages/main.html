@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>设备管理系统</title>
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <!--<link href="../vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">-->
+    <link href="../dist/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+            	<img style="float: left;" src="../img/logo.png" />
+                <span class="navbar-brand" >设备管理系统</span>
+            </div>
+      
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                </li>
+            </ul>
+            <div class="navbar-default sidebar" role="navigation">
+                
+                    <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="main.html" style="font-size:large;"><i class="fa fa-bar-chart-o fa-fw"></i>设备监控<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="main.html">设备列表</a>
+                                </li>
+                                <li>
+                                    <a href="">实时定位</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="deviceManagement.html" style="font-size:large;"><i class="fa fa-wrench fa-fw"></i>设备管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="deviceManagement.html">设备概览</a>
+                                </li>
+                                <li>
+                                    <a href="">增删设置</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="record.html" style="font-size:large;"><i class="fa fa-edit fa-fw"></i>记录查询<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="record.html">历史轨迹</a>
+                                </li>
+                                <li>
+                                    <a href="">异常警报统计</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+               </div>
+               
+        </nav>
+
+        <div id="page-wrapper">
+       		<div style="width: 200px;" class="chat-panel panel panel-default">
+                        <div style="width: 200px;" class="panel-heading">
+                            设备列表
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-chevron-down"></i>
+                                </button>
+                                <ul class="dropdown-menu slidedown">
+                                    <li>
+                                        <a v-on:click="refresh">
+                                            <i class="fa fa-refresh fa-fw"></i> 刷新
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a v-on:click="Normal">
+                                            <i class="fa fa-check-circle fa-fw"></i> 正常
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a v-on:click="Error">
+                                            <i class="fa fa-times fa-fw"></i> 异常
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div style="width: 200px;height: 600px;float: left;" class="panel-body">
+                               <template v-for="device in devices">
+                            	<a href="#" class="list-group-item">
+                                    {{device.name}}
+                                    <span class="pull-right text-muted small">
+                                    	<div style="float: right">
+                                    		<em>{{device.state}}</em>
+                                    	</div>
+                                    	<div v-if="device.state==='异常'" style="float: right">
+                                    		<img style="margin-right: 5px;" src="../img/redAlarm.png"/>
+                                    	</div>
+                                    	<div v-else-if="device.state==='离线'" style="float: right">
+                                    		<img style="margin-right: 5px;" src="../img/grayAlarm.png"/>
+                                    	</div>
+                                    </span>
+                                </a>
+                            </template>
+                        </div>
+                        <!-- /.panel-body -->
+                        <!--<div id="devicePosMap" :style="'width:'+deviceLocMapWidth+'px;height:'+deviceLocMapHeight+'px;margin-left:200px;border: dashed;background-image: url(http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg);background-repeat:no-repeat;'" >-->
+                        	<div id="devicePosMap" v-bind:style="{ width:deviceLocMapWidth+'px', height:deviceLocMapHeight+'px'}" style="margin-left:200px;border: dashed;background-image: url(http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg);background-repeat:no-repeat;">
+							<canvas id="devicePosCanvas" width="1000" height="800">
+                        	</canvas>
+                        	<!--<button v-on:click="divSize">hello</button>-->
+                        </div>
+                    </div>
+        </div>
+    </div>
+
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../dist/js/sb-admin-2.min.js"></script>
+    <script src="../js/vue.min.js"></script>
+    <script>
+    	
+   var mainVue = new Vue({
+    		el:'#wrapper',
+    		data: {
+    			myurl:'',
+    			deviceLocMapWidth:700,
+    			deviceLocMapHeight:1000,
+    			
+    			devices: [
+			      { name: 'Runoob',state:'正常',corX:'100',corY:'100' },
+			      { name: 'Google',state:'离线' ,corX:'200',corY:'210'},
+			      { name: 'Taobao',state:'异常',corX:'445',corY:'250'}
+			    ]
+		  },
+		 created :function(){
+		  		this.myurl="http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				var img = new Image();
+				img.src = "http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				this.deviceLocMapHeight=img.height;
+				this.deviceLocMapWidth=img.width;	
+				
+		  	},
+		  	mounted:function(){
+		  		$.ajax({
+				        type: "POST",
+				        url: "http://localhost:8080/haidizhen-lbsshow/device/all",
+				        dataType: "json",
+				        success: function (data) { 
+				        	console.log(mainVue.devices);
+				        	if(data.status=="200"){
+				        		for(var i=0;i<data.data.length;i++){
+//				        			console.log(data.data[i]);
+				        			mainVue.devices[i]={name:data.data[i].deviceName,state:data.data[i].deviceState,corX:data.data[i].devicePosX,corY:data.data[j].devicePosY};
+				        		}
+				        	}
+				        	console.log(mainVue.devices);
+				        },
+				        error: function () {
+				        	console.log("调用出错")
+				        }
+					});
+		  		var canvas = document.getElementById("devicePosCanvas");
+				ctx = canvas.getContext("2d");
+				imgRed = new Image();
+				imgRed.src="../img/red.png";
+				imgGray = new Image();
+				imgGray.src="../img/black.png";
+				imgGreen = new Image();
+				imgGreen.src="../img/green.png";
+				imgGreen.onload=function(){
+					for(var i=0;i<mainVue.devices.length;i++){
+						if(mainVue.devices[i].state=="正常"){
+							var x=mainVue.devices[i].corX;
+							var y=mainVue.devices[i].corY;
+							ctx.drawImage(imgGreen,x,y);
+						}else if(mainVue.devices[i].state=="异常"){
+							var x=mainVue.devices[i].corX;
+							var y=mainVue.devices[i].corY;
+							ctx.drawImage(imgRed,x,y);
+						}else{
+							var x=mainVue.devices[i].corX;
+							var y=mainVue.devices[i].corY;
+							ctx.drawImage(imgGray,x,y);
+						}
+					}
+				}
+		  	},
+    		methods:{
+    			refresh:function(){
+    				$.ajax({
+				        type: "POST",
+				        url: "http://localhost:8080/haidizhen-lbsshow/device/all",
+				        dataType: "json",
+				        success: function (data) { 
+				        	console.log(mainVue.devices);
+				        	if(data.status=="200"){
+				        		for(var i=0;i<data.data.length;i++){
+//				        			console.log(data.data[i]);
+				        			mainVue.devices[i]={name:data.data[i].deviceName,state:data.data[i].deviceState,corX:data.data[i].devicePosX,corY:data.data[j].devicePosY};
+				        		}
+				        	}
+				        	console.log(mainVue.devices);
+				        },
+				        error: function () {
+				        	console.log("调用出错")
+				        }
+					});
+//				      this.devices= [
+//			      { name: 'Runoob',state:'正常',corX:'423',corY:'250' },
+//			      { name: 'Google',state:'正常',corX:'356',corY:'300'},
+//			      { name: 'Taobao',state:'正常',corX:'255',corY:'340'}
+//			    ]
+    	},
+    	
+    		    Normal:function(){
+//  				$.ajax({
+//				        type: "POST",
+//				        url: "http://47.93.36.135/HDZ_LBSShow-0.0.1/HalfhourHeatmap",
+//				        dataType: "json",
+//				        success: function (data) { 
+//				        	listRefresh.data=data;
+//				        },
+//				        error: function () {
+//				        	console.log("调用出错")
+//				        }
+//					});
+				this.devices= [
+			      { name: 'Runoob',state:'正常' },
+			    ]
+    		},    			
+    			Error:function(){
+//  				$.ajax({
+//				        type: "POST",
+//				        url: "http://47.93.36.135/HDZ_LBSShow-0.0.1/HalfhourHeatmap",
+//				        dataType: "json",
+//				        success: function (data) { 
+//				        	listRefresh.data=data;
+//				        },
+//				        error: function () {
+//				        	console.log("调用出错")
+//				        }
+//					});
+					this.devices= [
+					     { name: 'Google',state:'离线'  },
+					     { name: 'Taobao',state:'异常'  }
+					]
+    	}
+//  		devicePositionMap:function(){
+//  			var canvas = document.getElementById("devicePosCanvas");
+//  			ctx = canvas.getContext("2d");
+//  			imgRed = new Image();
+//         		imgGreen = new Image();
+//         		imgGray = new Image();
+//          	imgRed.src="../img/red.png"
+//          	imgGray.src="../img/black.png";
+//          	imgGreen.src="../img/green.png"
+//    			var x=300;
+//    			var y=400;
+//    			ctx.drawImage(imgGreen,x,y-7,10,14);
+//  		}
+    		}
+    })
+    
+	
+    
+   
+		
+    	
+	    $(document).ready(function() {
+	        $('#dataTables-example').DataTable({
+	            responsive: true
+	        });
+	    });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>设备管理系统</title>
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="../vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <link href="../dist/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+            	<img style="float: left;" src="../img/logo.png" />
+                <span class="navbar-brand" >设备管理系统</span>
+            </div>
+      
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                </li>
+            </ul>
+            <div class="navbar-default sidebar" role="navigation">
+                                    
+                     <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="main.html" style="font-size:large;"><i class="fa fa-bar-chart-o fa-fw"></i>设备监控<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="main.html">设备列表</a>
+                                </li>
+                                <li>
+                                    <a href="">实时定位</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="deviceManagement.html" style="font-size:large;"><i class="fa fa-wrench fa-fw"></i>设备管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="deviceManagement.html">设备概览</a>
+                                </li>
+                                <li>
+                                    <a href="">增删设置</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="record.html" style="font-size:large;"><i class="fa fa-edit fa-fw"></i>记录查询<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="record.html">历史轨迹</a>
+                                </li>
+                                <li>
+                                    <a href="">异常警报统计</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+               </div>
+               
+        </nav>
+
+        <div id="page-wrapper">
+        	<div id="recordVue">
+        	<div class="panel panel-default" >
+                        <div class="panel-heading">
+                            历史轨迹
+                            <span style="float: right;">设备ID：<input></input> 时间：<input style="width: 80px;margin-right: 10px;"></input><button style="margin-right: 10px;" v-on:click="startPlot">开始绘制</button><button style="margin-right: 10px;">暂停</button></span>
+                        </div>
+                        <div style="height: 500px;overflow: auto;">
+                        	<div id="recordMap" v-bind:style="{ width:recordMapWidth+'px', height:recordMapHeight+'px'}" style="background-image: url(http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg);background-repeat:no-repeat;">
+								<canvas id="recordCanvas" width="500" height="600">
+	                            </canvas>
+                        	</div>
+                        </div>
+                    </div>
+        	
+        	<div class="row">
+                <div class="col-lg-12"> 
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+							报警总览
+                        </div>
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center;">设备名称</th>
+                                        <th style="text-align: center;">设备ID</th>
+                                        <th style="text-align: center;">当前状况</th>
+                                        <th style="text-align: center;">警报情况</th>
+                                        
+                                    </tr>
+                                </thead>
+                                
+                                
+                                <tbody>
+                                	<tr class="odd gradeX" v-for="deviceAlarm in devicesAlarm">
+	                                        <td style="text-align: center;">{{deviceAlarm.devicesName}}</td>
+	                                        <td style="text-align: center;">{{deviceAlarm.devicesID}}</td>
+	                                        <td style="text-align: center;">{{deviceAlarm.state}}</td>
+	                                        <td style="text-align: center;width: 20%;">{{deviceAlarm.alarmCount}}<a style="margin-left: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;详情</a></td>
+                                    	</tr>
+                                    	
+                                    <!--<tr class="odd gradeX">
+                                        <td>Trident</td>
+                                        <td>Internet Explorer 4.0</td>
+                                        <td>Win 95+</td>
+                                        <td class="center">4 <a style="float: right;">详情</a></td>
+                                    </tr>-->
+                                </tbody>
+                                
+                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        	</div>
+        </div>
+        
+    </div>
+
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../dist/js/sb-admin-2.min.js"></script>
+    <script src="../js/vue.min.js"></script>
+    <script>
+    	var recordVue = new Vue({
+    		el:'#recordVue',
+    		data: {
+    			myurl:'',
+    			recordMapWidth:700,
+    			recordMapHeight:1000,
+    			recordTrail: [
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'100',corY:'100' },
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'200',corY:'150' },
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'310',corY:'400' },
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'350',corY:'200' },
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'150',corY:'360' },
+			      { deviceID: '20170929670',timestamp:'20170930101130',corX:'225',corY:'260' }			      
+			    ],
+			    devicesAlarm:[
+	    			{"devicesName":"手机","devicesID":"20170929666","state":"正常","alarmCount":"1"},
+	    			{"devicesName":"MacBook","devicesID":"20170929667","state":"离线","alarmCount":"2"},
+	    			{"devicesName":"Dell","devicesID":"20170929668","state":"正常","alarmCount":"2"},
+	    			{"devicesName":"ASUS","devicesID":"20170929669","state":"正常","alarmCount":"3"},
+	    			{"devicesName":"iphone7","devicesID":"20170929670","state":"正常","alarmCount":"4"},
+	    			{"devicesName":"iphone6s","devicesID":"20170929671","state":"异常","alarmCount":"0"},
+	    			{"devicesName":"HuaWei","devicesID":"20170929672","state":"正常","alarmCount":"2"},
+	    			{"devicesName":"SONY","devicesID":"20170929673","state":"异常","alarmCount":"1"},
+	    			{"devicesName":"Samsung","devicesID":"20170929674","state":"正常","alarmCount":"2"}
+    			]
+		  },
+		   created :function(){
+		  		this.myurl="http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				var img = new Image();
+				img.src = "http://hdz.powerlbs.com/images/hdzplatform/map/HDZ010115D1C667EE4/F1/map.jpg";
+				this.recordMapHeight=img.height;
+				this.recordMapWidth=img.width;	
+		  	},
+		  methods:{
+		  	startPlot:function(){
+		  		var canvas = document.getElementById("recordCanvas");
+				ctx = canvas.getContext("2d");
+				canvas.height=canvas.height;
+				trailStart = new Image();
+				trailStart.src="../img/start.png";
+				trailEnd = new Image();
+				trailEnd.src="../img/end.png";
+				trailNormal = new Image();
+				trailNormal.src="../img/green.png";
+				trailStart.onload=function(){
+					
+					this.index=0;
+		  			var id = setInterval(() => {
+		  			if(this.index>=recordVue.recordTrail.length-1){
+		  				clearInterval(id);
+		  			}
+		  			if(this.index==0){
+		  				var x=recordVue.recordTrail[this.index].corX;
+						var y=recordVue.recordTrail[this.index].corY;
+						ctx.drawImage(trailStart,x-8,y-22);
+		  			}else if(this.index==recordVue.recordTrail.length-1){
+		  				var x=recordVue.recordTrail[this.index].corX;
+						var y=recordVue.recordTrail[this.index].corY;
+						var x2=recordVue.recordTrail[this.index-1].corX;
+						var y2=recordVue.recordTrail[this.index-1].corY;
+						ctx.strokeStyle="#000000";  
+		                ctx.lineWidth=1;  
+		                ctx.lineJoin="bevel";  
+		                ctx.lineCap="square";  
+		                ctx.beginPath(); 
+		                ctx.moveTo(x,y)
+		                ctx.lineTo(x2,y2); 
+		                ctx.stroke();  
+		                ctx.closePath();  
+						ctx.drawImage(trailEnd,x-8,y-22);
+		  			}else{
+		  				var x=recordVue.recordTrail[this.index].corX;
+						var y=recordVue.recordTrail[this.index].corY;
+						var x2=recordVue.recordTrail[this.index-1].corX;
+						var y2=recordVue.recordTrail[this.index-1].corY;
+						ctx.strokeStyle="#000000";  
+		                ctx.lineWidth=1;  
+		                ctx.lineJoin="bevel";  
+		                ctx.lineCap="square";  
+		                ctx.beginPath(); 
+		                ctx.moveTo(x,y)
+		                ctx.lineTo(x2,y2);  
+		                ctx.stroke();  
+		                ctx.closePath();  
+						ctx.drawImage(trailNormal,x-8,y-22);
+		  			}
+		  			this.index++;
+		  		},600);
+					
+				}
+		  	},
+//		  	move:function(x1,y1,x2,y2){
+//		  			
+//		  	},
+	
+		  }
+    		
+    });
+    	
+    	
+    	
+	    $(document).ready(function() {
+	        $('#dataTables-example').DataTable({
+	            responsive: true
+	        });
+	    });
+    </script>
+
+</body>
+
+</html>

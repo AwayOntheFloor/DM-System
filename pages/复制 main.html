@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>设备管理系统</title>
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="../vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <link href="../dist/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+            	<img style="float: left;" src="../img/logo.png" />
+                <span class="navbar-brand" >设备管理系统</span>
+            </div>
+      
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                </li>
+            </ul>
+            <div class="navbar-default sidebar" role="navigation">
+                
+                    <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="main.html" style="font-size:large;"><i class="fa fa-bar-chart-o fa-fw"></i>设备监控<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="main.html">设备列表</a>
+                                </li>
+                                <li>
+                                    <a href="">实时定位</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="deviceManagement.html" style="font-size:large;"><i class="fa fa-wrench fa-fw"></i>设备管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="deviceManagement.html">设备概览</a>
+                                </li>
+                                <li>
+                                    <a href="">增删设置</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="record.html" style="font-size:large;"><i class="fa fa-edit fa-fw"></i>记录查询<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="record.html">历史轨迹</a>
+                                </li>
+                                <li>
+                                    <a href="">异常警报统计</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+               </div>
+               
+        </nav>
+
+        <div id="page-wrapper">
+       		<div style="width: 200px;" class="chat-panel panel panel-default">
+                        <div style="width: 200px;" class="panel-heading">
+                            设备列表
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-chevron-down"></i>
+                                </button>
+                                <ul class="dropdown-menu slidedown">
+                                    <li>
+                                        <a v-on:click="refresh">
+                                            <i class="fa fa-refresh fa-fw"></i> 刷新
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a v-on:click="Normal">
+                                            <i class="fa fa-check-circle fa-fw"></i> 正常
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a v-on:click="Error">
+                                            <i class="fa fa-times fa-fw"></i> 异常
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div style="width: 200px;height: 600px;float: left;" class="panel-body">
+                               <template v-for="device in devices">
+                            	<a href="#" class="list-group-item">
+                                    {{device.name}}
+                                    <span class="pull-right text-muted small">
+                                    	<div style="float: right">
+                                    		<em>{{device.status}}</em>
+                                    	</div>
+                                    	<div v-if="device.status==='异常'" style="float: right">
+                                    		<img style="margin-right: 5px;" src="../img/redAlarm.png"/>
+                                    	</div>
+                                    	<div v-else-if="device.status==='离线'" style="float: right">
+                                    		<img style="margin-right: 5px;" src="../img/grayAlarm.png"/>
+                                    	</div>
+                                    </span>
+                                </a>
+                            </template>
+                        </div>
+                        <!-- /.panel-body -->
+                        <div style="margin-left:200px;width: 1000px;height: 600px;"><img  src="../img/sp20170921_120148.png"/></div>
+                    </div>
+        </div>
+    </div>
+
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../dist/js/sb-admin-2.min.js"></script>
+    <script src="../js/vue.min.js"></script>
+    <script>
+    new Vue({
+    		el:'#wrapper',
+    		data: {
+    			devices: [
+			      { name: 'Runoob',status:'正常' },
+			      { name: 'Google',status:'离线'  },
+			      { name: 'Taobao',status:'异常'  }
+			    ]
+		  },
+    		methods:{
+    			refresh:function(){
+//  				$.ajax({
+//				        type: "POST",
+//				        url: "http://47.93.36.135/HDZ_LBSShow-0.0.1/HalfhourHeatmap",
+//				        dataType: "json",
+//				        success: function (data) { 
+//				        	listRefresh.data=data;
+//				        },
+//				        error: function () {
+//				        	console.log("调用出错")
+//				        }
+//					});
+				      this.devices= [
+			      { name: 'Runoob',status:'正常' },
+			      { name: 'Google',status:'离线'  },
+			      { name: 'Taobao',status:'异常'  }
+			    ]
+    		},
+    		    Normal:function(){
+//  				$.ajax({
+//				        type: "POST",
+//				        url: "http://47.93.36.135/HDZ_LBSShow-0.0.1/HalfhourHeatmap",
+//				        dataType: "json",
+//				        success: function (data) { 
+//				        	listRefresh.data=data;
+//				        },
+//				        error: function () {
+//				        	console.log("调用出错")
+//				        }
+//					});
+				this.devices= [
+			      { name: 'Runoob',status:'正常' },
+			    ]
+    		},    			
+    			Error:function(){
+//  				$.ajax({
+//				        type: "POST",
+//				        url: "http://47.93.36.135/HDZ_LBSShow-0.0.1/HalfhourHeatmap",
+//				        dataType: "json",
+//				        success: function (data) { 
+//				        	listRefresh.data=data;
+//				        },
+//				        error: function () {
+//				        	console.log("调用出错")
+//				        }
+//					});
+					this.devices= [
+					     { name: 'Google',status:'离线'  },
+					     { name: 'Taobao',status:'异常'  }
+					]
+    		}
+    		}
+    });
+    	
+	    $(document).ready(function() {
+	        $('#dataTables-example').DataTable({
+	            responsive: true
+	        });
+	    });
+    </script>
+
+</body>
+
+</html>
